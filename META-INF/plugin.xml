@@ -1,43 +1,90 @@
-<idea-plugin version="2">
-  <id>com.yourcompany.unique.plugin.id</id>
-  <name>Plugin display name here</name>
-  <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
-
-  <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
-    ]]></description>
-
-  <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
-    ]]>
-  </change-notes>
-
-  <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-  <idea-version since-build="131"/>
-
-  <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
+<!--
+  ~ Copyright 2012 Mark Mandel
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
   -->
 
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
-  </extensions>
+<idea-plugin version="2">
+	<name>Tmux</name>
+	<description>
+		Plugin that provides Tmux integration with IntelliJ. First pass will be the ability to send data to a specific
+		Tmux panel, which can allow for REPL integration with IntelliJ.
 
-  <application-components>
-    <!-- Add your application components here -->
-  </application-components>
+		Further details can be found at: https://github.com/markmandel/tmux-intellij
+	</description>
+	<version>0.3</version>
+	<vendor url="http://www.compoundtheory.com">Mark Mandel</vendor>
 
-  <project-components>
-    <!-- Add your project components here -->
-  </project-components>
+	<!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+	<idea-version since-build="107.105"/>
 
-  <actions>
-    <!-- Add your actions here -->
-  </actions>
+	<application-components>
+		<component>
+			<!-- Component's implementation class -->
+			<implementation-class>com.compoundtheory.intellij.tmux.TmuxPlugin</implementation-class>
 
+			<!-- Component's interface class -->
+			<interface-class>com.compoundtheory.intellij.tmux.TmuxPlugin</interface-class>
+		</component>
+	</application-components>
+
+	<project-components>
+		<!-- project components -->
+	</project-components>
+
+	<actions>
+		<!-- Add your actions here -->
+		<group id="Tmux.popup.group" class="com.compoundtheory.intellij.tmux.actions.TmuxDefaultActionGroup" text="Tmux"
+			   description="Tmux" popup="true">
+            <add-to-group group-id="EditorPopupMenu"/>
+        </group>
+
+        <group id="Tmux.default.group" class="com.compoundtheory.intellij.tmux.actions.TmuxDefaultActionGroup" text="Tmux"
+			   description="Tmux" popup="true">
+			<add-to-group group-id="ToolsMenu"/>
+
+			<group id="Tmux.panel.select.group" class="com.compoundtheory.intellij.tmux.actions.SelectPaneActionGroup"
+				   text="Select Pane:" description="Select the pane you want"
+				   popup="true"/>
+
+
+			<action id="com.compoundtheory.intellij.tmux.actions.SendSelectedTextAction"
+					class="com.compoundtheory.intellij.tmux.actions.SendSelectedTextAction" text="Send Selected To Tmux"
+					description="Sends the selected text to the selected Tmux Pane">
+				<keyboard-shortcut keymap="$default" first-keystroke="ctrl B" second-keystroke="V"/>
+
+				<add-to-group group-id="Tmux.popup.group" anchor="last" />
+			</action>
+
+            <action id="com.compoundtheory.intellij.tmux.actions.SendCurrentLineAction"
+					class="com.compoundtheory.intellij.tmux.actions.SendCurrentLineAction" text="Send Current Line To Tmux"
+					description="Sends the current line to the selected Tmux Pane">
+				<keyboard-shortcut keymap="$default" first-keystroke="ctrl B" second-keystroke="L"/>
+
+				<add-to-group group-id="Tmux.popup.group" anchor="last" />
+			</action>
+		</group>
+
+
+	</actions>
+
+	<extensions defaultExtensionNs="com.intellij">
+		<!-- Add your extensions here -->
+		<applicationConfigurable instance="com.compoundtheory.intellij.tmux.config.AppConfigurable" />
+		<applicationService serviceImplementation="com.compoundtheory.intellij.tmux.config.TmuxAppSettings" serviceInterface="com.compoundtheory.intellij.tmux.config.TmuxAppSettings" />
+
+		<projectConfigurable instance="com.compoundtheory.intellij.tmux.config.ProjConfigurable" />
+		<projectService serviceImplementation="com.compoundtheory.intellij.tmux.config.TmuxProjSettings" serviceInterface="com.compoundtheory.intellij.tmux.config.TmuxProjSettings" />
+
+	</extensions>
 </idea-plugin>

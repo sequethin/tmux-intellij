@@ -1,2 +1,5 @@
+!.gitignore
 *.iml
 .idea
+out
+*.jar
